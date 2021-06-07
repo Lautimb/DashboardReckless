@@ -2,9 +2,8 @@ import Container from '../containers/Container'
 import PageHeading from '../PageHeading'    
 import LastAdded from './sections/LastAdded'
 import Label from './sections/Label'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Table from './sections/Table'
-import getData from '../services/getData'
 import Product from './sections/Product'
 
 export default function Main(){
@@ -16,7 +15,20 @@ export default function Main(){
     const [categories, setCategories] = useState({})
     const eachCategory = Object.entries(categories);
     
-    getData(setTotalUsers,setMeta,setLastProduct, setCategories, setPaginatedProducts)
+    useEffect(()=>{
+      fetch('http://localhost:3300/api/products',{ method: 'GET'})
+          .then( res => res.json())
+              .then( data => {
+                setMeta(data.meta)
+                setLastProduct(data.meta.lastProduct)
+                setCategories(data.meta.countByCategory)
+              })
+      fetch('http://localhost:3300/api/users',{ method: 'POST'})
+          .then(res => res.json())
+              .then(data =>{
+                setTotalUsers(data.meta.count)
+              })
+    },[]) 
 
     return (
             <Container classes="container-fluid">
